@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>행운의 뽑기</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>🎁 행운의 뽑기판 🎁</h1>
+
+  <div class="grid">
+    {% for i in range(100) %}
+      {% if board[i] == "USED" %}
+        <button class="card" id="cell-{{ i }}" disabled>✔</button>
+      {% else %}
+        <button class="card" id="cell-{{ i }}" onclick="draw({{ i }})">?</button>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div id="result-modal" class="modal" style="display: none;">
+    <div id="result-card" style="display: none;">
+      <p id="result-text"></p>
+      <img id="result-img" src="" />
+    </div>
+  </div>
+
+  <div id="stats">
+    <h2>📊 두근두근 오늘의 당첨 현황 📊</h2>
+    <ul>
+      {% for rank, count in results.items() %}
+        <li>{{ rank }}: {{ count }}명</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div id="toast" class="toast" style="display: none;">안내 메시지</div>
+
+  <script>
+    function draw(cellId) {
+      fetch(`/draw/${cellId}`)
+        .then(res => res.json())
+        .then(data => {
+          if ("rank" in data) {
+            document.getElementById("result-text").innerText = `${data.rank} 당첨! 🎉`;
+            document.getElementById("result-img").src = "/" + data.image;
+            document.getElementById("result-modal").style.display = "block";
+            document.getElementById("result-card").style.display = "block";
+            document.getElementById(`cell-${cellId}`).disabled = true;
+            document.getElementById(`cell-${cellId}`).innerText = "✔";
+          }
+
+          if ("message" in data) {
+            showToast(data.message);
+          }
+        });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 2500);
+    }
+  </script>
+</body>
+</html>

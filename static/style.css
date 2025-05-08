@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: 'Gowun Dodum', sans-serif;
+  background-color: #FFFBEA;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding-inline: 12px;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-size: 2em;
+  margin: 20px 0 10px;
+  color: #FF69B4;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
+  gap: 6px;
+  width: 100%;
+  max-width: 500px;
+  padding: 16px;
+  background-color: #fff;
+  border: 3px solid #FFD700;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+  justify-items: center;
+}
+
+.card {
+  background: #4A90E2;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  height: 36px;
+  width: 36px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  background: #357ABD;
+}
+
+.card:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.modal {
+  background: #fff;
+  border: 3px solid #FFB3E6;
+  border-radius: 12px;
+  padding: 16px;
+  width: 95%;
+  max-width: 400px;
+  margin: 30px auto;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+#result-card {
+  background: #FFF7F1;
+  padding: 20px;
+  border-radius: 12px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#result-text {
+  font-size: 20px;
+  color: #FF69B4;
+  max-width: 90%;
+  margin: 0 auto;
+  word-wrap: break-word;
+}
+
+#stats {
+  margin: 30px 0 50px;
+  font-size: 16px;
+  text-align: center;
+}
+
+#stats ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+  font-size: 18px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(51, 51, 51, 0.9);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 1000;
+  transition: opacity 0.3s ease-in-out;
+}
