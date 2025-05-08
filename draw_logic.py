@@ -30,12 +30,14 @@ def draw_prize(cell_id):
     with open(BOARD_FILE, "w") as f:
         json.dump(board, f)
 
+    # 실시간 통계 업데이트
     results = get_results()
     results[result] = results.get(result, 0) + 1
     with open(RESULTS_FILE, "w") as f:
         json.dump(results, f)
 
     return result
+
 
 def get_results():
     try:

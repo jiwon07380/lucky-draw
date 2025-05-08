@@ -28,13 +28,15 @@
   </div>
 
   <div id="stats">
-    <h2>📊 두근두근 오늘의 당첨 현황 📊</h2>
-    <ul>
-      {% for rank, count in results.items() %}
-        <li>{{ rank }}: {{ count }}명</li>
-      {% endfor %}
-    </ul>
+      <h2>📊 두근두근 오늘의 당첨 현황 📊</h2>
+      <ul>
+        {% for rank, count in results.items() %}
+          <li>{{ rank }}: {{ count }}명</li>
+        {% endfor %}
+      </ul>
   </div>
+
+
 
   <div id="toast" class="toast" style="display: none;">안내 메시지</div>
 
