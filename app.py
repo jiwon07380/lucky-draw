@@ -5,7 +5,15 @@ import hashlib
 from draw_logic import draw_prize, get_results, get_board
 from image_generator import generate_image
 
-app = Flask(__name__)
+# Flask 앱을 templates 폴더와 연결
+app = Flask(__name__, template_folder='templates')
+
+# 홈 페이지 라우트 추가
+@app.route("/")
+def index():
+    board = get_board()
+    results = get_results()
+    return render_template("index.html", board=board, results=results)
 
 def get_ip():
     return request.remote_addr  # 클라이언트 IP 주소를 받아옵니다.
