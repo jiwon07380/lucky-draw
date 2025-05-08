@@ -5,7 +5,7 @@ def generate_image(rank):
     base = Image.new("RGB", (600, 400), "#FFF7F1")
     draw = ImageDraw.Draw(base)
 
-    font_path = "C:\\Windows\\Fonts\\malgun.ttf"  # 또는 서버 배포 시 폰트 포함 경로 지정
+    font_path = os.path.join(os.path.dirname(__file__), 'static', 'fonts', 'malgun.ttf')  # 또는 서버 배포 시 폰트 포함 경로 지정
     font = ImageFont.truetype(font_path, 36)
 
     messages = {
