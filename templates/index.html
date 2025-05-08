@@ -41,24 +41,31 @@
   <div id="toast" class="toast" style="display: none;">안내 메시지</div>
 
   <script>
-    function draw(cellId) {
-      fetch(`/draw/${cellId}`)
-        .then(res => res.json())
-        .then(data => {
-          if ("rank" in data) {
-            document.getElementById("result-text").innerText = `${data.rank} 당첨! 🎉`;
-            document.getElementById("result-img").src = "/" + data.image;
-            document.getElementById("result-modal").style.display = "block";
-            document.getElementById("result-card").style.display = "block";
-            document.getElementById(`cell-${cellId}`).disabled = true;
-            document.getElementById(`cell-${cellId}`).innerText = "✔";
-          }
+   function draw(cellId) {
+  fetch(`/draw/${cellId}`)
+    .then(res => res.json())
+    .then(data => {
+      if ("rank" in data) {
+        document.getElementById("result-text").innerText = `${data.rank} 당첨! 🎉`;
+        document.getElementById("result-img").src = "/" + data.image;
+        
+        // 이미지가 로딩될 때까지 기다렸다가 모달 창 표시
+        const resultImg = document.getElementById("result-img");
+        resultImg.onload = function() {
+          document.getElementById("result-modal").style.display = "block";  // 모달 창 표시
+          document.getElementById("result-card").style.display = "block";
+        };
+        
+        document.getElementById(`cell-${cellId}`).disabled = true;
+        document.getElementById(`cell-${cellId}`).innerText = "✔";
+      }
 
-          if ("message" in data) {
-            showToast(data.message);
-          }
-        });
-    }
+      if ("message" in data) {
+        showToast(data.message);
+      }
+    });
+}
+
 
     function showToast(message) {
       const toast = document.getElementById("toast");
