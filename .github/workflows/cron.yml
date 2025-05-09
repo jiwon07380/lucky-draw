@@ -2,7 +2,7 @@ name: Reset Board Daily
 
 on:
   schedule:
-    - cron: '0 15 * * *'  # UTC 기준 매일 자정 = 한국시간 오전 00시
+    - cron: '0 15 * * *'  # 한국시간 기준 매일 00:00에 실행 (UTC 15:00)
 
 jobs:
   reset:
@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
           python-version: '3.x'
 
@@ -22,6 +22,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run reset_draw.py
+      - name: Run reset script
         run: |
-          python reset_draw.py
+          python reset_draw.py  # 리셋 실행 (prizes.json, results.json 초기화)
