@@ -14,3 +14,17 @@ git add app.py  # 수정된 파일 추가
 git commit -m "🔧 포트 바인딩을 환경 변수로 설정"  # 변경사항 커밋
 git push origin main  # GitHub에 푸시
 
+
+
+lucky-draw/
+├── app.py               # Flask 앱 파일
+├── draw_logic.py        # 뽑기 로직
+├── reset_draw.py        # 자정에 실행될 스크립트
+├── image_generator.py   # 이미지 생성
+├── templates/           # HTML 템플릿 폴더
+│   └── index.html
+├── static/              # 스타일 시트 폴더
+│   └── style.css
+├── Procfile             # Render 배포 설정 파일
+├── requirements.txt     # 필요한 Python 패키지 목록
+└── README.md            # 프로젝트 설명서

@@ -48,6 +48,14 @@ def draw(cell_id):
 
     return resp
 
+# 리셋 라우트 추가
+@app.route("/reset", methods=["POST"])
+def reset():
+    try:
+        reset_board()  # 리셋 함수 호출
+        return jsonify({"message": "Board reset successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Flask가 Render의 자동 포트를 사용하도록 설정
 if __name__ == "__main__":

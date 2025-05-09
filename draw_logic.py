@@ -38,7 +38,6 @@ def draw_prize(cell_id):
 
     return result
 
-
 def get_results():
     try:
         with open("results.json", "r") as f:
@@ -47,5 +46,6 @@ def get_results():
         return {}
 
 def reset_board():
-    generate_board()
-    print("뽑기판이 자정에 초기화되었습니다.")
+    # 기존 보드를 초기화
+    generate_board()  # 새 보드 생성
+    print("초기화되었습니다^0^")

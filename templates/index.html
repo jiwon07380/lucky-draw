@@ -6,6 +6,7 @@
   <title>행운의 뽑기</title>
   <link rel="stylesheet" href="/static/style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet"> <!-- 이모지 폰트 추가 -->
 </head>
 <body>
   <h1>🎁 행운의 뽑기판 🎁</h1>
@@ -28,44 +29,59 @@
   </div>
 
   <div id="stats">
-      <h2>📊 두근두근 오늘의 당첨 현황 📊</h2>
-      <ul>
-        {% for rank, count in results.items() %}
-          <li>{{ rank }}: {{ count }}명</li>
-        {% endfor %}
-      </ul>
+    <h2>📊 두근두근 오늘의 당첨 현황 📊</h2>
+    <ul id="results-list">
+      {% for rank, count in results.items() %}
+        <li>{{ rank }}: {{ count }}명</li>
+      {% endfor %}
+    </ul>
   </div>
-
-
 
   <div id="toast" class="toast" style="display: none;">안내 메시지</div>
 
   <script>
-   function draw(cellId) {
-  fetch(`/draw/${cellId}`)
-    .then(res => res.json())
-    .then(data => {
-      if ("rank" in data) {
-        document.getElementById("result-text").innerText = `${data.rank} 당첨! 🎉`;
-        document.getElementById("result-img").src = "/" + data.image;
-        
-        // 이미지가 로딩될 때까지 기다렸다가 모달 창 표시
-        const resultImg = document.getElementById("result-img");
-        resultImg.onload = function() {
-          document.getElementById("result-modal").style.display = "block";  // 모달 창 표시
-          document.getElementById("result-card").style.display = "block";
-        };
-        
-        document.getElementById(`cell-${cellId}`).disabled = true;
-        document.getElementById(`cell-${cellId}`).innerText = "✔";
-      }
+    function draw(cellId) {
+      fetch(`/draw/${cellId}`)
+        .then(res => res.json())
+        .then(data => {
+          if ("rank" in data) {
+            document.getElementById("result-text").innerText = `${data.rank} 당첨! 🎉`;
+            document.getElementById("result-img").src = "/" + data.image;
+            
+            // 이미지가 로딩될 때까지 기다렸다가 모달 창 표시
+            const resultImg = document.getElementById("result-img");
+            resultImg.onload = function() {
+              document.getElementById("result-modal").style.display = "block";  // 모달 창 표시
+              document.getElementById("result-card").style.display = "block";
+            };
+            
+            document.getElementById(`cell-${cellId}`).disabled = true;
+            document.getElementById(`cell-${cellId}`).innerText = "✔";
 
-      if ("message" in data) {
-        showToast(data.message);
-      }
-    });
-}
+            // 당첨 결과 실시간 반영
+            updateResults();
+          }
 
+          if ("message" in data) {
+            showToast(data.message);
+          }
+        });
+    }
+
+    // 당첨 현황을 실시간으로 업데이트
+    function updateResults() {
+      fetch("/results")
+        .then(res => res.json())
+        .then(data => {
+          const stats = document.querySelector("#results-list");
+          stats.innerHTML = "";
+          for (const [rank, count] of Object.entries(data)) {
+            const li = document.createElement("li");
+            li.textContent = `${rank}: ${count}명`;
+            stats.appendChild(li);
+          }
+        });
+    }
 
     function showToast(message) {
       const toast = document.getElementById("toast");
@@ -75,6 +91,11 @@
         toast.style.display = "none";
       }, 2500);
     }
+
+    // 페이지가 로드될 때마다 당첨 현황을 초기화
+    window.onload = function() {
+      updateResults();
+    };
   </script>
 </body>
 </html>
