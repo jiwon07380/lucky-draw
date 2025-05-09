@@ -3,31 +3,36 @@ name: Deploy and Reset Board
 on:
   push:
     branches:
-      - main
+      - main  # main 브랜치에 푸시되면 워크플로우 실행
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # GitHub Actions에서 제공하는 운영체제 환경
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      # GitHub repository 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      # Python 환경 설정
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      # 의존성 설치
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Run the reset script
-      run: |
-        python reset_draw.py  # 배포 후 리셋 스크립트 실행
+      # 리셋 스크립트 실행 (초기화)
+      - name: Run the reset script
+        run: |
+          python reset_draw.py  # 리셋 스크립트 실행
 
-    - name: Deploy to Render
-      run: |
-        git remote set-url origin https://github.com/jiwon07380/lucky-draw.git
-        git push render main
+      # 배포하기
+      - name: Deploy to Render
+        run: |
+          git remote set-url origin https://github.com/jiwon07380/lucky-draw.git
+          git push render main  # Render 서버에 푸시
