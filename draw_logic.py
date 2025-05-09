@@ -1,21 +1,30 @@
 import random
 import json
+import os
+from datetime import datetime
 from config import PRIZE_COUNTS
 
 BOARD_FILE = "prizes.json"
 RESULTS_FILE = "results.json"
+LOG_FILE = "reset_log.txt"
 
 def generate_board():
-    items = []
-    for k, v in PRIZE_COUNTS.items():
-        items += [k] * v
-    random.shuffle(items)
-    with open(BOARD_FILE, "w", encoding="utf-8") as f:
-        json.dump(items, f, ensure_ascii=False)
+    try:
+        items = []
+        for k, v in PRIZE_COUNTS.items():
+            items += [k] * v
+        random.shuffle(items)
+        with open(BOARD_FILE, "w", encoding="utf-8") as f:
+            json.dump(items, f, ensure_ascii=False)
+    except Exception as e:
+        log_error("generate_board", e)
 
 def reset_results():
-    with open(RESULTS_FILE, "w", encoding="utf-8") as f:
-        json.dump({}, f, ensure_ascii=False)
+    try:
+        with open(RESULTS_FILE, "w", encoding="utf-8") as f:
+            json.dump({}, f, ensure_ascii=False)
+    except Exception as e:
+        log_error("reset_results", e)
 
 def get_board():
     try:
@@ -26,21 +35,30 @@ def get_board():
         return get_board()
 
 def draw_prize(cell_id):
-    board = get_board()
-    result = board[cell_id]
+    try:
+        board = get_board()
 
-    # 실시간 통계는 USED가 아닌 경우에만 집계
-    if result != "USED":
+        if cell_id < 0 or cell_id >= len(board):
+            return "INVALID"
+
+        result = board[cell_id]
+        if result == "USED":
+            return "USED"
+
         results = get_results(raw=True)
         results[result] = results.get(result, 0) + 1
+
         with open(RESULTS_FILE, "w", encoding="utf-8") as f:
             json.dump(results, f, ensure_ascii=False)
 
-    board[cell_id] = "USED"
-    with open(BOARD_FILE, "w", encoding="utf-8") as f:
-        json.dump(board, f, ensure_ascii=False)
+        board[cell_id] = "USED"
+        with open(BOARD_FILE, "w", encoding="utf-8") as f:
+            json.dump(board, f, ensure_ascii=False)
 
-    return result
+        return result
+    except Exception as e:
+        log_error("draw_prize", e)
+        return "ERROR"
 
 def get_results(raw=False):
     try:
@@ -52,12 +70,20 @@ def get_results(raw=False):
     if raw:
         return results
 
-    # 원하는 순서로 정렬된 딕셔너리 반환
     order = ["1등", "2등", "3등", "4등", "꽝"]
-    sorted_results = {rank: results.get(rank, 0) for rank in order}
-    return sorted_results
+    return {rank: results.get(rank, 0) for rank in order}
 
 def reset_board():
-    generate_board()      # 보드 초기화
-    reset_results()       # 통계 초기화
-    print("✅ 자정 초기화되었습니다^0^")
+    generate_board()
+    reset_results()
+    log("✅ 자정 초기화 완료!")
+
+def log(message):
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(f"[{now}] {message}\n")
+
+def log_error(context, error):
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(f"[{now}] ❌ {context} 오류: {error}\n")
