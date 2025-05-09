@@ -10,14 +10,25 @@ LOG_FILE = "reset_log.txt"
 
 def generate_board():
     try:
+        # 새 보드 생성
         items = []
         for k, v in PRIZE_COUNTS.items():
             items += [k] * v
         random.shuffle(items)
+
+        # 덮어쓰기 전에 기존 파일 삭제 (명시적으로 제거)
+        if os.path.exists(BOARD_FILE):
+            os.remove(BOARD_FILE)
+
+        # 새 보드 저장
         with open(BOARD_FILE, "w", encoding="utf-8") as f:
             json.dump(items, f, ensure_ascii=False)
+
+        print("✅ generate_board(): 새 보드 저장 완료")
+
     except Exception as e:
-        log_error("generate_board", e)
+        print(f"❌ generate_board() 오류: {e}")
+
 
 def reset_results():
     try:
