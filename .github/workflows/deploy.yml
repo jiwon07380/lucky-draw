@@ -5,7 +5,8 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 15 * * *'  # KST 자정 (UTC 15:00)
+    - cron: '0 15 * * *'  # 한국 자정 (UTC 15:00)
+  workflow_dispatch:       # ✅ 수동 실행 허용 (버튼 생김)
 
 jobs:
   deploy:
