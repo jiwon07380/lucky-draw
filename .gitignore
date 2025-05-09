@@ -1,0 +1,14 @@
+# Python 관련 무시 파일
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VSCode/IDE 설정 등
+.vscode/
+.idea/
+
+# 운영 중 생성되는 데이터 파일
+prizes.json
+results.json
+reset_log.txt
