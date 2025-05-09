@@ -2,16 +2,26 @@ name: Reset Board Daily
 
 on:
   schedule:
-    - cron: '0 15 * * *'  # UTC 시간 기준 매일 자정(한국시간 00:00)
+    - cron: '0 15 * * *'  # UTC 기준 매일 자정 = 한국시간 오전 00시
 
 jobs:
   reset:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out the repo
-      uses: actions/checkout@v2
+      - name: Check out the repo
+        uses: actions/checkout@v3
 
-    - name: Call reset endpoint
-      run: |
-        curl -X POST https://lucky-draw-p0dn.onrender.com/reset  # 리셋을 호출하는 URL
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run reset_draw.py
+        run: |
+          python reset_draw.py
