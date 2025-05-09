@@ -10,14 +10,16 @@ def generate_board():
     for k, v in PRIZE_COUNTS.items():
         items += [k] * v
     random.shuffle(items)
-    with open(BOARD_FILE, "w") as f:
-        json.dump(items, f)
-    with open(RESULTS_FILE, "w") as f:
-        json.dump({}, f)
+    with open(BOARD_FILE, "w", encoding="utf-8") as f:
+        json.dump(items, f, ensure_ascii=False)
+
+def reset_results():
+    with open(RESULTS_FILE, "w", encoding="utf-8") as f:
+        json.dump({}, f, ensure_ascii=False)
 
 def get_board():
     try:
-        with open(BOARD_FILE, "r") as f:
+        with open(BOARD_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except:
         generate_board()
@@ -26,26 +28,28 @@ def get_board():
 def draw_prize(cell_id):
     board = get_board()
     result = board[cell_id]
-    board[cell_id] = "USED"
-    with open(BOARD_FILE, "w") as f:
-        json.dump(board, f)
 
-    # 실시간 통계 업데이트
-    results = get_results()
-    results[result] = results.get(result, 0) + 1
-    with open(RESULTS_FILE, "w") as f:
-        json.dump(results, f)
+    # 실시간 통계는 USED가 아닌 경우에만 집계
+    if result != "USED":
+        results = get_results()
+        results[result] = results.get(result, 0) + 1
+        with open(RESULTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(results, f, ensure_ascii=False)
+
+    board[cell_id] = "USED"
+    with open(BOARD_FILE, "w", encoding="utf-8") as f:
+        json.dump(board, f, ensure_ascii=False)
 
     return result
 
 def get_results():
     try:
-        with open("results.json", "r") as f:
+        with open(RESULTS_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except:
         return {}
 
 def reset_board():
-    # 기존 보드를 초기화
-    generate_board()  # 새 보드 생성
-    print("초기화되었습니다^0^")
+    generate_board()      # 보드 초기화
+    reset_results()       # 통계 초기화
+    print("✅ 자정 초기화되었습니다^0^")
