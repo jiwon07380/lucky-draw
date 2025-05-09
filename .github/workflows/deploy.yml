@@ -3,34 +3,30 @@ name: Deploy and Reset Board
 on:
   push:
     branches:
-      - main  # main 브랜치에 푸시될 때 자동 실행
+      - main
+  schedule:
+    - cron: '0 15 * * *'  # KST 자정 (UTC 15:00)
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # GitHub 리포지토리 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Python 환경 설정
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
 
-      # 의존성 설치
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 리셋 스크립트 실행 (배포 전에 초기화)
       - name: Run reset script
         run: python reset_draw.py
 
-      # Render 배포 트리거 (보안을 위해 GitHub Secrets 사용)
       - name: Trigger Render Deploy via Secure Secret
-        run: |
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
