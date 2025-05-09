@@ -6,77 +6,53 @@ from config import PRIZE_COUNTS
 
 BOARD_FILE = "prizes.json"
 RESULTS_FILE = "results.json"
-LOG_FILE = "reset_log.txt"
 
+# 새 보드 생성 (USED 없음)
 def generate_board():
-    try:
-        # 새 보드 생성
-        items = []
-        for k, v in PRIZE_COUNTS.items():
-            items += [k] * v
-        random.shuffle(items)
+    items = []
+    for k, v in PRIZE_COUNTS.items():
+        items += [k] * v
+    random.shuffle(items)
+    with open(BOARD_FILE, "w", encoding="utf-8") as f:
+        json.dump(items, f, ensure_ascii=False)
 
-        # 덮어쓰기 전에 기존 파일 삭제 (명시적으로 제거)
-        if os.path.exists(BOARD_FILE):
-            os.remove(BOARD_FILE)
-
-        # 새 보드 저장
-        with open(BOARD_FILE, "w", encoding="utf-8") as f:
-            json.dump(items, f, ensure_ascii=False)
-
-        print("✅ generate_board(): 새 보드 저장 완료")
-
-    except Exception as e:
-        print(f"❌ generate_board() 오류: {e}")
-
-
+# 결과 초기화
 def reset_results():
-    try:
-        with open(RESULTS_FILE, "w", encoding="utf-8") as f:
-            json.dump({}, f, ensure_ascii=False)
-    except Exception as e:
-        log_error("reset_results", e)
+    with open(RESULTS_FILE, "w", encoding="utf-8") as f:
+        json.dump({}, f, ensure_ascii=False)
 
+# 📌 새로고침할 때 보드는 다시 읽기만 한다 (없을 때만 생성)
 def get_board():
-    try:
-        with open(BOARD_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except:
+    if not os.path.exists(BOARD_FILE):
         generate_board()
-        return get_board()
+    with open(BOARD_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
 
+# 뽑기 실행
 def draw_prize(cell_id):
-    try:
-        board = get_board()
+    board = get_board()
+    if board[cell_id] == "USED":
+        return "USED"
 
-        if cell_id < 0 or cell_id >= len(board):
-            return "INVALID"
+    result = board[cell_id]
 
-        result = board[cell_id]
-        if result == "USED":
-            return "USED"
+    results = get_results(raw=True)
+    results[result] = results.get(result, 0) + 1
+    with open(RESULTS_FILE, "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False)
 
-        results = get_results(raw=True)
-        results[result] = results.get(result, 0) + 1
+    board[cell_id] = "USED"
+    with open(BOARD_FILE, "w", encoding="utf-8") as f:
+        json.dump(board, f, ensure_ascii=False)
 
-        with open(RESULTS_FILE, "w", encoding="utf-8") as f:
-            json.dump(results, f, ensure_ascii=False)
+    return result
 
-        board[cell_id] = "USED"
-        with open(BOARD_FILE, "w", encoding="utf-8") as f:
-            json.dump(board, f, ensure_ascii=False)
-
-        return result
-    except Exception as e:
-        log_error("draw_prize", e)
-        return "ERROR"
-
+# 통계 반환
 def get_results(raw=False):
-    try:
-        with open(RESULTS_FILE, "r", encoding="utf-8") as f:
-            results = json.load(f)
-    except:
-        results = {}
+    if not os.path.exists(RESULTS_FILE):
+        reset_results()
+    with open(RESULTS_FILE, "r", encoding="utf-8") as f:
+        results = json.load(f)
 
     if raw:
         return results
@@ -84,17 +60,8 @@ def get_results(raw=False):
     order = ["1등", "2등", "3등", "4등", "꽝"]
     return {rank: results.get(rank, 0) for rank in order}
 
+# 전체 초기화 (자정 또는 배포 시에만 호출됨)
 def reset_board():
     generate_board()
     reset_results()
-    log("✅ 자정 초기화 완료!")
-
-def log(message):
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(LOG_FILE, "a", encoding="utf-8") as f:
-        f.write(f"[{now}] {message}\n")
-
-def log_error(context, error):
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(LOG_FILE, "a", encoding="utf-8") as f:
-        f.write(f"[{now}] ❌ {context} 오류: {error}\n")
+    print("✅ 자정 또는 배포 시 전체 보드 초기화 완료")
