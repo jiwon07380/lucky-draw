@@ -29,14 +29,12 @@ def draw_prize(cell_id):
     board = get_board()
     result = board[cell_id]
 
-    # 이미 사용된 칸은 집계 제외
+    # 실시간 통계는 USED가 아닌 경우에만 집계
     if result != "USED":
-        results = get_results()
+        results = get_results(raw=True)
         results[result] = results.get(result, 0) + 1
         with open(RESULTS_FILE, "w", encoding="utf-8") as f:
-            # 등수 정렬 순서 유지: 1등 → 2등 → 3등 → 4등 → 꽝
-            sorted_results = {rank: results.get(rank, 0) for rank in ["1등", "2등", "3등", "4등", "꽝"] if rank in results}
-            json.dump(sorted_results, f, ensure_ascii=False)
+            json.dump(results, f, ensure_ascii=False)
 
     board[cell_id] = "USED"
     with open(BOARD_FILE, "w", encoding="utf-8") as f:
@@ -44,12 +42,20 @@ def draw_prize(cell_id):
 
     return result
 
-def get_results():
+def get_results(raw=False):
     try:
         with open(RESULTS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            results = json.load(f)
     except:
-        return {}
+        results = {}
+
+    if raw:
+        return results
+
+    # 원하는 순서로 정렬된 딕셔너리 반환
+    order = ["1등", "2등", "3등", "4등", "꽝"]
+    sorted_results = {rank: results.get(rank, 0) for rank in order}
+    return sorted_results
 
 def reset_board():
     generate_board()      # 보드 초기화
