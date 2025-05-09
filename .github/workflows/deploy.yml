@@ -29,3 +29,8 @@ jobs:
       # 리셋 스크립트 실행 (배포 전에 초기화)
       - name: Run reset script
         run: python reset_draw.py
+
+      # Render 배포 트리거 (보안을 위해 GitHub Secrets 사용)
+      - name: Trigger Render Deploy via Secure Secret
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
